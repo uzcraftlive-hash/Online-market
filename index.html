@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Shop - Avtomobil Do'koni</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: Arial, sans-serif;
+      color: #333;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .logo span {
+      color: #764ba2;
+    }
+
+    .cart-icon {
+      font-size: 28px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ff4444;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 30px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      color: white;
+    }
+
+    .product-info {
+      padding: 20px;
+    }
+
+    .product-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .product-description {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .product-price {
+      font-size: 24px;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 15px;
+    }
+
+    .product-price span {
+      font-size: 18px;
+      color: #999;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .quantity-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+
+    .quantity-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .quantity-display {
+      width: 40px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .add-to-cart {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .add-to-cart:active {
+      transform: scale(0.95);
+    }
+
+    .cart-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      justify-content: flex-end;
+      z-index: 1000;
+    }
+
+    .cart-modal.show {
+      display: flex;
+    }
+
+    .cart-panel {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    .cart-header {
+      padding: 20px;
+      border-bottom: 2px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-header h2 {
+      font-size: 22px;
+      color: #667eea;
+    }
+
+    .close-cart {
+      font-size: 28px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .cart-item {
+      background: #f8f8f8;
+      padding: 15px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .cart-item-price {
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    .cart-item-remove {
+      background: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .cart-item-remove:hover {
+      background: #dd3333;
+    }
+
+    .cart-footer {
+      padding: 20px;
+      border-top: 2px solid #eee;
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .cart-total span {
+      color: #667eea;
+      font-size: 24px;
+    }
+
+    .checkout-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #00ff88 0%, #00dd77 100%);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .checkout-btn:active {
+      transform: scale(0.97);
+    }
+
+    .order-modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      display: none;
+      z-index: 1001;
+      text-align: center;
+      max-width: 400px;
+      animation: popIn 0.3s ease;
+    }
+
+    .order-modal.show {
+      display: block;
+    }
+
+    @keyframes popIn {
+      from {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+      }
+      to {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .order-modal h2 {
+      color: #00ff88;
+      font-size: 32px;
+      margin-bottom: 15px;
+    }
+
+    .order-modal p {
+      color: #666;
+      margin-bottom: 10px;
+      font-size: 16px;
+    }
+
+    .order-modal .total-price {
+      color: #667eea;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+
+    .order-modal button {
+      width: 100%;
+      padding: 15px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .products {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+      }
+
+      .cart-panel {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🚗 CAR <span>SHOP</span></div>
+      <div class="cart-icon" id="cartIcon">
+        🛒
+        <div class="cart-count" id="cartCount">0</div>
+      </div>
+    </div>
+
+    <div class="products" id="productsContainer"></div>
+  </div>
+
+  <!-- SAVAT MODALI -->
+  <div class="cart-modal" id="cartModal">
+    <div class="cart-panel">
+      <div class="cart-header">
+        <h2>Savat</h2>
+        <span class="close-cart" id="closeCart">✕</span>
+      </div>
+
+      <div class="cart-items" id="cartItemsContainer"></div>
+
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span>Jami:</span>
+          <span id="cartTotal">$0</span>
+        </div>
+        <button class="checkout-btn" id="checkoutBtn">Buyurtma Qilish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUYURTMA TASDIQLANAD MODALI -->
+  <div class="order-modal" id="orderModal">
+    <h2>✅ Buyurtma Qabul Qilindi!</h2>
+    <p>Rahmat sotib olganingiz uchun!</p>
+    <p id="orderDetails"></p>
+    <div class="total-price" id="orderPrice">$0</div>
+    <p style="color: #888; font-size: 14px;">Sizning mashinangiz 3-5 kun ichida yetadi.</p>
+    <button onclick="closeOrderModal()">OK</button>
+  </div>
+
+  <script>
+    const products = [
+      { id: 1, name: 'Tesla Model 3', emoji: '⚡', price: 55000, description: 'Elektr avtomobil - tez va tejamkor' },
+      { id: 2, name: 'BMW M5', emoji: '🏎️', price: 120000, description: 'Sport sedan - quvvatli motor' },
+      { id: 3, name: 'Mercedes-Benz E-Class', emoji: '👑', price: 95000, description: 'Lyuks avtomobil - komfortli' },
+      { id: 4, name: 'Audi A8', emoji: '✨', price: 110000, description: 'Premium sedan - zamonaviy texnologiya' },
+      { id: 5, name: 'Porsche 911', emoji: '🔥', price: 150000, description: 'Sport mashina - quvvatli engine' },
+      { id: 6, name: 'Range Rover', emoji: '🏔️', price: 135000, description: 'SUV - kuchli va barqaror' },
+      { id: 7, name: 'Ferrari F8', emoji: '❤️', price: 280000, description: 'Supercar - eng quvvatli' },
+      { id: 8, name: 'Lamborghini Urus', emoji: '💎', price: 220000, description: 'Lyuks SUV - eksklyuziv' }
+    ];
+
+    let cart = [];
+
+    const productsContainer = document.getElementById('productsContainer');
+    const cartIcon = document.getElementById('cartIcon');
+    const cartModal = document.getElementById('cartModal');
+    const closeCart = document.getElementById('closeCart');
+    const cartItemsContainer = document.getElementById('cartItemsContainer');
+    const cartCount = document.getElementById('cartCount');
+    const cartTotal = document.getElementById('cartTotal');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const orderModal = document.getElementById('orderModal');
+
+    // MAHSULOTLARNI CHIQARISH
+    function renderProducts() {
+      productsContainer.innerHTML = '';
+      products.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div class="product-image">${product.emoji}</div>
+          <div class="product-info">
+            <div class="product-name">${product.name}</div>
+            <div class="product-description">${product.description}</div>
+            <div class="product-price">$${product.price.toLocaleString()}</div>
+            <div class="quantity-control">
+              <button class="quantity-btn" onclick="decreaseQuantity(${product.id})">−</button>
+              <div class="quantity-display" id="qty-${product.id}">1</div>
+              <button class="quantity-btn" onclick="increaseQuantity(${product.id})">+</button>
+            </div>
+            <button class="add-to-cart" onclick="addToCart(${product.id})">🛒 Savat qo'sh</button>
+          </div>
+        `;
+        productsContainer.appendChild(card);
+      });
+    }
+
+    let quantities = {};
+    products.forEach(p => quantities[p.id] = 1);
+
+    function increaseQuantity(id) {
+      quantities[id]++;
+      document.getElementById(`qty-${id}`).textContent = quantities[id];
+    }
+
+    function decreaseQuantity(id) {
+      if (quantities[id] > 1) quantities[id]--;
+      document.getElementById(`qty-${id}`).textContent = quantities[id];
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      const quantity = quantities[id];
+      const existingItem = cart.find(item => item.id === id);
+
+      if (existingItem) {
+        existingItem.quantity += quantity;
+      } else {
+        cart.push({ ...product, quantity });
+      }
+
+      updateCart();
+      alert(`✅ ${product.name} savatga qo'shildi!`);
+      quantities[id] = 1;
+      document.getElementById(`qty-${id}`).textContent = 1;
+    }
+
+    function updateCart() {
+      cartCount.textContent = cart.length;
+      renderCartItems();
+      calculateTotal();
+    }
+
+    function renderCartItems() {
+      cartItemsContainer.innerHTML = '';
+      if (cart.length === 0) {
+        cartItemsContainer.innerHTML = '<p style="text-align: center; color: #888;">Savat bo\'sh</p>';
+        return;
+      }
+
+      cart.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'cart-item';
+        itemDiv.innerHTML = `
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.emoji} ${item.name}</div>
+            <div class="cart-item-price">$${item.price.toLocaleString()} × ${item.quantity}</div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${item.id})">❌ O'chirish</button>
+        `;
+        cartItemsContainer.appendChild(itemDiv);
+      });
+    }
+
+    function removeFromCart(id) {
+      cart = cart.filter(item => item.id !== id);
+      updateCart();
+    }
+
+    function calculateTotal() {
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      cartTotal.textContent = '$' + total.toLocaleString();
+      return total;
+    }
+
+    cartIcon.addEventListener('click', () => {
+      cartModal.classList.add('show');
+    });
+
+    closeCart.addEventListener('click', () => {
+      cartModal.classList.remove('show');
+    });
+
+    checkoutBtn.addEventListener('click', () => {
+      if (cart.length === 0) {
+        alert('❌ Savat bo\'sh! Mahsulot tanlang.');
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const cartSummary = cart.map(item => `${item.emoji} ${item.name} × ${item.quantity}`).join('\n');
+
+      document.getElementById('orderDetails').innerHTML = cartSummary.replace(/\n/g, '<br>');
+      document.getElementById('orderPrice').textContent = '$' + total.toLocaleString();
+
+      cartModal.classList.remove('show');
+      orderModal.classList.add('show');
+
+      setTimeout(() => {
+        cart = [];
+        updateCart();
+      }, 2000);
+    });
+
+    function closeOrderModal() {
+      orderModal.classList.remove('show');
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
